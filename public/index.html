@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>AZTransferGeo</title>
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body  ng-app="AZTransferGeo" ng-controller="MainController">
+	<button id="getMap" ng-click="getMap()" ng-disabled="enGetMap">Get Map</button>
+	<button id="getData" ng-click="getData()" ng-disabled="enGetData">Get Data</button>
+	<button id="autoFit" ng-click="autoFit()" ng-disabled="enAutoFit">Auto Fit</button> 
+	<span id="message">{{message}}</span> 
+	<br>
+	<div id="map"></div>
+	<script type="text/javascript" charset="utf-8" src="js/angular.js"></script>
+	<script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8i2iaPTh_sHo15teCKAhni2QCDCvEWgg&callback=initMap" 
+	async defer></script>
+    
+</body>
+</html>
