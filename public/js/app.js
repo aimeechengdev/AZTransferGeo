@@ -2,7 +2,9 @@ var mapLoaded = false;
 function initMap() {
     mapLoaded = true;
 }
-var IPS = ['68.109.164.88', '192.110.160.24', '24.56.31.0', '68.178.213.203', '68.2.16.30', '72.222.216.248', '69.53.221.39', '148.167.98.0'];
+//var IPS = ['68.109.164.88', '192.110.160.24', '24.56.31.0', '68.178.213.203', '68.2.16.30', '72.222.216.248', '69.53.221.39', '148.167.98.0'];
+//var IPS = ['68.109.164.88', '68.109.164.87', '68.109.164.86',];
+
 angular.module('AZTransferGeo', [])
   .controller('MainController', function( $scope, $http, $interval) {
     var map;
@@ -41,30 +43,36 @@ angular.module('AZTransferGeo', [])
     };
 
     $scope.getData = function(){
-        $scope.enAutoFit = false;
-        bounds = new google.maps.LatLngBounds();
-        IPS.forEach(function(item){
-            var url = "http://ipinfo.io/" + item + "/geo"
-            $http.get(url).then(function(response){
-                var geoLoc = response.data;
-                var title = geoLoc.ip + ', ' + geoLoc.city + ', ' + geoLoc.region + ', ' + geoLoc.country + ', ' + geoLoc.postal;
-                var loc = geoLoc.loc.split(',');
-                var myLatLng = {lat: Number(loc[0]), lng: Number(loc[1])};
-                var marker = new google.maps.Marker({
-                  position: myLatLng,
-                  map: map,
-                  title: title
-                });
-                var contentString = "<div>" + title + "     with more information</div>";
-                var infowindow = new google.maps.InfoWindow({
-                    content: contentString
-                });
-                bounds.extend(marker.position);
-                marker.addListener('click', function() {
-                infowindow.open(map, marker);
-                });
+        $http.get('/locs').then(function(response){
+                var ips = response.data;
+                $scope.enAutoFit = false;
+                bounds = new google.maps.LatLngBounds();
+                ips.forEach(function(item){
+                    var url = "http://ipinfo.io/" + item.ip + "/geo";
+                    $http.get(url).then(function(response){
+                        if(response&&response.data.loc){
+                        var geoLoc = response.data;
+                        var title = geoLoc.ip + ', ' + geoLoc.city + ', ' + geoLoc.region + ', ' + geoLoc.country + ', ' + geoLoc.postal;
+                        var loc = geoLoc.loc.split(',');
+                        var myLatLng = {lat: Number(loc[0]), lng: Number(loc[1])};
+                        var marker = new google.maps.Marker({
+                          position: myLatLng,
+                          map: map,
+                          title: title
+                        });
+                        var contentString = "<div>" + title + "-" + item.time + "     with more information</div>";
+                        var infowindow = new google.maps.InfoWindow({
+                            content: contentString
+                        });
+                        bounds.extend(marker.position);
+                        marker.addListener('click', function() {
+                        infowindow.open(map, marker);
+                        });
+                    }
+                    },function(error){});
+                })
             },function(error){});
-        })
+        
     };
         
     $scope.autoFit = function(){
